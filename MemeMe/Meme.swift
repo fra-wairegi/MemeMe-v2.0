@@ -8,6 +8,8 @@
 
 import UIKit
 
+// Struct to represent and individual Meme Object
+
 struct Meme {
     var topText: String = ""
     var bottomText: String = ""
