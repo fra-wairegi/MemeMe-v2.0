@@ -124,6 +124,10 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let pickerController = UIImagePickerController()
         pickerController.delegate = self
         pickerController.sourceType = sourceType
+        
+        // Allow the image to be edited
+        pickerController.allowsEditing = true
+        
         present(pickerController, animated: true, completion: nil)
     }
 
