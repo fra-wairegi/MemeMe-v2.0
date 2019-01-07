@@ -34,23 +34,22 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        topTextField.text = "TOP"
-        bottomTextField.text = "BOTTOM"
         
-        // Setting the defaultTextAttributes property
-        topTextField.defaultTextAttributes = memeTextAttributes
-        bottomTextField.defaultTextAttributes = memeTextAttributes
-        
-        // Text should be center-aligned
-        topTextField.textAlignment = .center
-        bottomTextField.textAlignment = .center
-        
-        topTextField.delegate = self
-        bottomTextField.delegate = self
+        configureMemeTextField(textField: topTextField, text: "TOP")
+        configureMemeTextField(textField: bottomTextField, text: "BOTTOM")
         
         // Disable the share button
         shareButton.isEnabled = false
     
+    }
+    
+        // Review recommendation #1
+        // remove code redundancy
+    func configureMemeTextField(textField: UITextField, text: String) {
+        textField.text = text
+        textField.delegate = self
+        textField.defaultTextAttributes = memeTextAttributes
+        textField.textAlignment = .center
     }
     
     // Start Keyboard adjustments
@@ -185,8 +184,13 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let memedImage = generateMemedImage()
         let activityController = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
         activityController.completionWithItemsHandler = { activity, success, items, error in
-            self.save()
-            self.dismiss(animated: true, completion: nil)
+            
+            // Review recommendation #2
+            // Save only if the sharing action is successful
+            if success {
+                self.save()
+                self.dismiss(animated: true, completion: nil)
+            }
         }
         
         present(activityController, animated: true, completion: nil)
