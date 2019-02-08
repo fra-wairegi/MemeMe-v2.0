@@ -1,6 +1,6 @@
 //
 //  Meme.swift
-//  MemeMe
+//  MemeMe 2.0
 //
 //  Created by Francis Wairegi on 1/1/19.
 //  Copyright © 2019 Francis Wairegi. All rights reserved.

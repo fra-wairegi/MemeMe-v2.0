@@ -1,6 +1,6 @@
 //
 //  MemeEditorViewController.swift
-//  MemeMe
+//  MemeMe 2.0
 //
 //  Created by Francis Wairegi on 12/30/18.
 //  Copyright © 2018 Francis Wairegi. All rights reserved.
@@ -9,19 +9,14 @@
 import UIKit
 
 class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
-
+    
+    // MARK: Properties
     @IBOutlet weak var imagePickerView: UIImageView!
-    
     @IBOutlet weak var topTextField: UITextField!
-    
     @IBOutlet weak var bottomTextField: UITextField!
-    
     @IBOutlet weak var cameraButton: UIBarButtonItem!
-    
     @IBOutlet weak var shareButton: UIBarButtonItem!
-    
     @IBOutlet weak var toolbar: UIToolbar!
-    
     @IBOutlet weak var navigationBar: UINavigationBar!
     
     let memeTextAttributes: [NSAttributedString.Key: Any] = [
@@ -31,7 +26,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         NSAttributedString.Key.strokeWidth: -4.0
     ]
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,11 +34,8 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         
         // Disable the share button
         shareButton.isEnabled = false
-    
     }
-    
-        // Review recommendation #1
-        // remove code redundancy
+
     func configureMemeTextField(textField: UITextField, text: String) {
         textField.text = text
         textField.delegate = self
@@ -52,9 +43,8 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         textField.textAlignment = .center
     }
     
-    // Start Keyboard adjustments
+    // MARK: Start Keyboard adjustments
         override func viewWillAppear(_ animated: Bool) {
-            
             super.viewWillAppear(animated)
             
             // Disable camera button if device does not have camera
@@ -70,13 +60,11 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         }
     
         func subscribeToKeyboardNotifications() {
-            
             NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         }
     
         func unsubscribeFromKeyboardNotifications() {
-            
             NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
             NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
         }
@@ -103,13 +91,14 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
             let keyboardSize = userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! NSValue // of CGRect
             return keyboardSize.cgRectValue.height
         }
-    
     // End Keyboard adjustments
  
-    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        if let image = info[.originalImage] as? UIImage {
-            imagePickerView.image = image
+
+            // Use ".editedImage" instead of ".originalImage" as allowsEditing flag
+            //  is true. This ensures the proper image is picked from the info dictionary
+            if let image = info[.editedImage] as? UIImage {
+                imagePickerView.image = image
             
             // Enable the share button after and image is choosen
             shareButton.isEnabled = true
@@ -119,13 +108,11 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     
     func chooseImageSource(sourceType: UIImagePickerController.SourceType) {
         
-        //Code To Choose An Image From Source
+        //Choose An Image From Source
         let pickerController = UIImagePickerController()
         pickerController.delegate = self
         pickerController.sourceType = sourceType
-        
-        // Allow the image to be edited
-        pickerController.allowsEditing = true
+        pickerController.allowsEditing = true  // Allow the image to be edited
         
         present(pickerController, animated: true, completion: nil)
     }
@@ -141,7 +128,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     func textFieldDidBeginEditing(_ textField: UITextField){
         
         // When a user taps inside a textfield, the default text should clear
-
         if textField.text == "TOP" || textField.text == "BOTTOM" {
             textField.text = ""
         }
@@ -150,7 +136,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         // When a user presses return, the keyboard should be dismissed
-        
         textField.resignFirstResponder()
         return true;
     }
@@ -158,7 +143,12 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     func save() {
         // Create the meme
         let memedImage = generateMemedImage();
-        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
+        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
+        
+        // Add it to the memes array in the Application Delegate
+        let object = UIApplication.shared.delegate
+        let appDelegate = object as! AppDelegate
+        appDelegate.memes.append(meme)
     }
     
     func generateMemedImage() -> UIImage {
@@ -176,7 +166,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         // Show toolbar and navbar
         toolbar.isHidden = false
         navigationBar.isHidden = false
-        
         return memedImage
     }
     @IBAction func shareButton(_ sender: Any) {
@@ -185,23 +174,19 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let activityController = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
         activityController.completionWithItemsHandler = { activity, success, items, error in
             
-            // Review recommendation #2
             // Save only if the sharing action is successful
             if success {
                 self.save()
                 self.dismiss(animated: true, completion: nil)
             }
         }
-        
         present(activityController, animated: true, completion: nil)
     }
     
     @IBAction func cancelButton(_ sender: Any) {
         
-        topTextField.text = "TOP"
-        bottomTextField.text = "BOTTOM"
-        imagePickerView.image = nil
-        shareButton.isEnabled = false
+        // When Cancel button is pressed, the Sent Memes appears
+        dismiss(animated: true, completion: nil)
     }
 }
 
