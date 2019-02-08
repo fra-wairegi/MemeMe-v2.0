@@ -67,6 +67,7 @@ class MemeTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             memes.remove(at: indexPath.row)
+            (UIApplication.shared.delegate as! AppDelegate).memes.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }

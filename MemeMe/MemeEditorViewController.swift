@@ -73,7 +73,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
             
             // Shift the image up to accomodate the keyboard only when the bottom text field is selected
             if bottomTextField.isFirstResponder{
-            view.frame.origin.y -= getKeyboardHeight(notification)
+                view.frame.origin.y -= getKeyboardHeight(notification)
             }
         }
     
@@ -81,7 +81,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
             
             // Hide keyboard only when the bottom text field is selected
             if bottomTextField.isFirstResponder {
-            view.frame.origin.y = 0
+                view.frame.origin.y = 0
             }
         }
     
